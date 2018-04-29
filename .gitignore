@@ -2,3 +2,4 @@
 .idea/workspace.iml
 *.xml
 __pycache__
+test.py
