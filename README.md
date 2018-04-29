@@ -10,7 +10,9 @@ The purpose of this bot is to provide a platform for positive environment contro
 
 # API's Used
 TensorFlow
+
 NumPy
+
 Discord.py
 
 # Installation
