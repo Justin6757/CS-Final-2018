@@ -3,4 +3,8 @@
 *.xml
 __pycache__
 test.py
+<<<<<<< HEAD
 Pretrained/*
+=======
+Pretrained/*
+>>>>>>> 178a63302904b0369d385a2b3556c6d721882b8c
