@@ -3,4 +3,4 @@
 *.xml
 __pycache__
 test.py
-Pretrained/LSTM-Sentiment-Analysis-master
+Pretrained/*
