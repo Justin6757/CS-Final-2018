@@ -12,6 +12,7 @@ def load_data():
     Load word vectors from GloVe data set (https://nlp.stanford.edu/projects/glove/)
     :return: None
     """
+    print(os.listdir('.'))
     os.chdir('../Data')
     print(os.listdir('.'))
 
@@ -32,7 +33,7 @@ def tokenize(sentence):
     """
     special_chars = re.compile(r'\W+')  # Replace all characters except letters and numbers
     tokens = re.sub(special_chars, ' ', sentence)  # Substitute special characters with spaces
-    return tokens.split()
+    return [token for token in tokens.split() if token]
 
 
 if __name__ == '__main__':
