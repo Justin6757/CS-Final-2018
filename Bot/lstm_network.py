@@ -15,6 +15,8 @@ def load_data():
     os.chdir('../Data')
     print(os.listdir('.'))
 
+    # Load word vectors
+
     word_list = np.load(
         'Word Vectors/GloVe_words.npy').tolist()  # Load as list; used for getting indices to access word vectors
     word_list = [word.decode('UTF-8') for word in word_list]  # Decode all words in UTF-8 format
@@ -26,9 +28,9 @@ def tokenize(sentence):
     """
     Remove non-words and split sentence by word
     :param sentence:
-    :return: list[String]
+    :return: list[str]
     """
-    special_chars = re.compile(r'[\W\|\D]+')  # Replace all characters except letters and numbers
+    special_chars = re.compile(r'\W+')  # Replace all characters except letters and numbers
     tokens = re.sub(special_chars, ' ', sentence)  # Substitute special characters with spaces
     return tokens.split()
 
