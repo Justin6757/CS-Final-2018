@@ -2,18 +2,6 @@ import re
 import pandas as pd
 import os
 
-
-def tokenize(sentence):
-    """
-    Remove non-words and split sentence by word
-    :param sentence:
-    :return: list[str]
-    """
-    special_chars = re.compile(r'\W+')  # Replace all characters except letters and numbers
-    tokens = re.sub(special_chars, ' ', sentence.lower())  # Substitute special characters with spaces
-    return [token for token in tokens.split() if token]
-
-
 os.chdir('Data/Training Data')
 print(os.listdir('/Users/MacBook/Documents/LSTM Data'))
 
@@ -28,7 +16,7 @@ def toxicity():
 
     # print(len((annotations['rev_id'].unique())))
 
-    labels = annotations.groupby('rev_id')['toxicity_score'].mean() > 0.5
+    labels = annotations.groupby('rev_id')['toxicity_score'].mean() < 0
     # print(labels)
 
     comments['toxic'] = labels
@@ -59,7 +47,7 @@ def aggression():
     total = len((annotations['rev_id'].unique()))
 
     # if most users agree that the comment is negative, mark as negative
-    labels = annotations.groupby('rev_id')['aggression_score'].mean() > 0.5
+    labels = annotations.groupby('rev_id')['aggression_score'].mean() < 0
     comments['aggressive'] = labels
 
     comments['comment'] = comments['comment'].apply(lambda x: x.replace("NEWLINE_TOKEN", " "))
@@ -102,4 +90,7 @@ def attack():
             with open(f'/Users/MacBook/Documents/LSTM Data/Non-negative/{str(index) + "_t"}.txt', 'w+') as f:
                 f.write(row['comment'])
 
+
 # toxicity()
+aggression()
+attack()
