@@ -1,9 +1,12 @@
-import re
 import pandas as pd
 import os
 
 os.chdir('Data/Training Data')
 print(os.listdir('/Users/MacBook/Documents/LSTM Data'))
+
+
+def encode(line):
+    return line.encode('utf-8', errors='replace').decode('utf-8')
 
 
 def toxicity():
@@ -14,27 +17,22 @@ def toxicity():
 
     total = len((annotations['rev_id'].unique()))
 
-    # print(len((annotations['rev_id'].unique())))
-
     labels = annotations.groupby('rev_id')['toxicity_score'].mean() < 0
-    # print(labels)
 
     comments['toxic'] = labels
 
     comments['comment'] = comments['comment'].apply(lambda x: x.replace("NEWLINE_TOKEN", " "))
     comments['comment'] = comments['comment'].apply(lambda x: x.replace("TAB_TOKEN", " "))
 
-    # print(comments.query('attack')['comment'].head())
-
     for index, row in comments.iterrows():
         print(f'{num}/{total}')
         num += 1
         if row['toxic']:
-            with open(f'/Users/MacBook/Documents//LSTM Data/Negative/{str(index) + "_t"}.txt', 'w+') as f:
-                f.write(row['comment'])
+            with open(f'/Users/MacBook/Documents//LSTM Data/Negative/{str(index)}.txt', 'w+') as f:
+                f.write(encode(row['comment']))
         else:
-            with open(f'/Users/MacBook/Documents/LSTM Data/Non-negative/{str(index) + "_t"}.txt', 'w+') as f:
-                f.write(row['comment'])
+            with open(f'/Users/MacBook/Documents/LSTM Data/Non-negative/{str(index)}.txt', 'w+') as f:
+                f.write(encode(row['comment']))
 
 
 def aggression():
@@ -57,11 +55,11 @@ def aggression():
         print(f'{num}/{total}')
         num += 1
         if row['aggressive']:
-            with open(f'/Users/MacBook/Documents//LSTM Data/Negative/{str(index) + "_t"}.txt', 'w+') as f:
-                f.write(row['comment'])
+            with open(f'/Users/MacBook/Documents//LSTM Data/Negative/{str(index)}.txt', 'w+') as f:
+                f.write(encode(row['comment']))
         else:
-            with open(f'/Users/MacBook/Documents/LSTM Data/Non-negative/{str(index) + "_t"}.txt', 'w+') as f:
-                f.write(row['comment'])
+            with open(f'/Users/MacBook/Documents/LSTM Data/Non-negative/{str(index)}.txt', 'w+') as f:
+                f.write(encode(row['comment']))
 
 
 def attack():
@@ -84,13 +82,13 @@ def attack():
         print(f'{num}/{total}')
         num += 1
         if row['attack']:
-            with open(f'/Users/MacBook/Documents//LSTM Data/Negative/{str(index) + "_t"}.txt', 'w+') as f:
-                f.write(row['comment'])
+            with open(f'/Users/MacBook/Documents//LSTM Data/Negative/{str(index)}.txt', 'w+') as f:
+                f.write(encode(row['comment']))
         else:
-            with open(f'/Users/MacBook/Documents/LSTM Data/Non-negative/{str(index) + "_t"}.txt', 'w+') as f:
-                f.write(row['comment'])
+            with open(f'/Users/MacBook/Documents/LSTM Data/Non-negative/{str(index)}.txt', 'w+') as f:
+                f.write(encode(row['comment']))
 
 
-# toxicity()
+toxicity()
 aggression()
 attack()
