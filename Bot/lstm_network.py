@@ -6,8 +6,6 @@ import re
 
 import numpy as np
 
-MAX_SENTENCE_LENGTH = 80
-
 
 def load_data():
     """
