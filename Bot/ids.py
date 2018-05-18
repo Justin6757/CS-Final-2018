@@ -5,7 +5,7 @@ from os.path import isfile, join
 import numpy as np
 
 MAX_SENTENCE_LENGTH = 100
-NUM_FILES = 313217
+NUM_FILES = 313217  # From metadata.py
 
 
 def tokenize(sentence):
@@ -52,21 +52,19 @@ non_negative_files = [f'{path}/Non-negative/' + f for f in listdir(f'{path}/Non-
 #                break
 #        file_count += 1
 
-# for nf in negativeFiles:
-#    with open(nf, "r") as f:
-#        indexCounter = 0
-#        line=f.readline()
-#        cleanedLine = cleanSentences(line)
-#        split = cleanedLine.split()
-#        for word in split:
+# for nn in non_negative_files:
+#    with open(nn, "r") as f:
+#        index = 0
+#        line = f.readline()
+#        cleaned = tokenize(line)
+#        for word in cleaned:
 #            try:
-#                ids[fileCounter][indexCounter] = wordsList.index(word)
+#                ids[file_count][index] = word_list.index(word)
 #            except ValueError:
-#                ids[fileCounter][indexCounter] = 399999 #Vector for unknown words
-#            indexCounter = indexCounter + 1
-#            if indexCounter >= maxSeqLength:
+#                ids[file_count][index] = 399999 #Vector for unknown words
+#            index += 1
+#            if index >= MAX_SENTENCE_LENGTH:
 #                break
-#        fileCounter = fileCounter + 1
-# #Pass into embedding function and see if it evaluates.
+#        file_count += 1
 
 # np.save('idsMatrix', ids)
