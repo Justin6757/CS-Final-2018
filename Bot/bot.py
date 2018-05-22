@@ -134,17 +134,16 @@ async def score(ctx):
     current_time = time.time()
     old_time = current_time
 
-    database_match = db.serves.find({'UID': ctx.message.author.id})
-    for user in database_match:
-        old_time = user.get('last message')
-        prev_score = user.get('points')
+    for user in memberList:
+        if user.id == ctx.message.author.id:
+            temp = user
+            prev_score = user.score
+            old_time = user.time
 
     time_points = (current_time - old_time) / 600
 
-    db.serves.update({'UID': ctx.message.author.id},
-                     {'UID': ctx.message.author.id,
-                      'points': min(prev_score + time_points, MAX_SCORE),
-                      'last message': current_time})
+    temp.score = min(prev_score + time_points, MAX_SCORE)
+    temp.time = current_time
 
     await client.send_message(ctx.message.channel,
                               f'{ctx.message.author}\'s score is '
