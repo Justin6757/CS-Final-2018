@@ -78,3 +78,5 @@ for nn in non_negative_files:
 np.save('idsMatrix', ids)
 
 print(f'Took {(time.time() - start) / 60} minutes')
+
+# Took 258.5635282675425 minutes
