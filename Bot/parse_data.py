@@ -1,5 +1,6 @@
-import pandas as pd
 import os
+
+import pandas as pd
 
 os.chdir('Data/Training Data')
 print(os.listdir('/Users/MacBook/Documents/LSTM Data'))

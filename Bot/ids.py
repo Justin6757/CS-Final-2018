@@ -1,9 +1,12 @@
-import re
 import os
+import re
+import time
 from os import listdir
 from os.path import isfile, join
 
 import numpy as np
+
+start = time.time()
 
 MAX_SENTENCE_LENGTH = 100
 NUM_FILES = 313217  # From metadata.py
@@ -54,6 +57,7 @@ for n in negative_files:
             if index >= MAX_SENTENCE_LENGTH:
                 break
         file_count += 1
+        print(f'{file_count}/{NUM_FILES}\t{round(file_count / NUM_FILES * 100, 4)}%')
 
 for nn in non_negative_files:
     with open(nn, "r") as f:
@@ -69,5 +73,8 @@ for nn in non_negative_files:
             if index >= MAX_SENTENCE_LENGTH:
                 break
         file_count += 1
+        print(f'{file_count}/{NUM_FILES}\t{round(file_count / NUM_FILES * 100, 4)}%')
 
 np.save('idsMatrix', ids)
+
+print(f'Took {(time.time() - start) / 60} minutes')

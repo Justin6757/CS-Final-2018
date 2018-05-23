@@ -1,7 +1,7 @@
 import asyncio
+import pickle
 import time
 
-import pickle
 import discord
 from discord import Game
 from discord.ext.commands import Bot
@@ -9,7 +9,7 @@ from discord.ext.commands import Bot
 
 # class for member info
 class DiscordMember:
-    def __init__(self, uid, time):
+    def __init__(self, uid, time_):
         self.id = uid
         self.score = 25
         self.time = time
@@ -20,9 +20,9 @@ class DiscordMember:
         return False
 
     def __str__(self):
-        print("ID: " + id + "\n")
+        print("ID: " + self.id + "\n")
         print("Score: " + score + "\n")
-        print("Time Since Last Message: " + time + "\n")
+        print("Time Since Last Message: " + self.time_ + "\n")
         print("--------------------------------")
 
 
