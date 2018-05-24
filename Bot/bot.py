@@ -9,10 +9,10 @@ from discord.ext.commands import Bot
 
 # class for member info
 class DiscordMember:
-    def __init__(self, uid, time_):
+    def __init__(self, uid, mtime):
         self.id = uid
         self.score = 25
-        self.time = time
+        self.mtime = mtime
 
     def __eq__(self, other):
         if self.id == other.id:
@@ -20,10 +20,9 @@ class DiscordMember:
         return False
 
     def __str__(self):
-        print("ID: " + self.id + "\n")
-        print("Score: " + score + "\n")
-        print("Time Since Last Message: " + self.time_ + "\n")
-        print("--------------------------------")
+        return "ID: " + self.id + "\n" + \
+               "Score: " + str(self.score) + "\n" + \
+               "\n" + "--------------------------------"
 
 
 # loads data from previous session of bot
@@ -57,6 +56,7 @@ async def on_ready():
     servers = list(client.servers)
     for server in servers:
         for member in server.members:
+            print(time.time())
             temp = DiscordMember(member.id, time.time())
             if temp not in memberList:
                 memberList.append(temp)
@@ -101,7 +101,7 @@ async def on_message(message):
             if user.id == message.author.id:
                 temp = user
                 prev_score = user.score
-                old_time = user.time
+                old_time = user.mtime
 
         time_points = (current_time - old_time) / 600
 
@@ -138,7 +138,7 @@ async def score(ctx):
         if user.id == ctx.message.author.id:
             temp = user
             prev_score = user.score
-            old_time = user.time
+            old_time = user.mtime
 
     time_points = (current_time - old_time) / 600
 
