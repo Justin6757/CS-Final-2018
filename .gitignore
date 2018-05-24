@@ -1,7 +1,7 @@
 .idea/
-.idea/workspace.iml
 *.xml
 __pycache__
 test.py
 Pretrained/*
-idsMatrix.npy
+ids_matrix.npy
+tensorboard
