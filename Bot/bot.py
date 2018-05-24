@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
 import asyncio
 import pickle
 import time
@@ -9,6 +8,18 @@ import time
 import discord
 from discord import Game
 from discord.ext.commands import Bot
+
+from lstm_network import create
+
+NEURAL_NET = create()
+
+
+def get_sentiment(sentence):
+    prediction = NEURAL_NET.predict(sentence)
+    negative_score = prediction[0]
+    non_negative_score = prediction[1]
+    print(f'Positive: {non_negative_score}\nNegative: {negative_score}\nComposite: {non_negative_score-negative_score}')
+    return non_negative_score - negative_score
 
 
 # class for member info

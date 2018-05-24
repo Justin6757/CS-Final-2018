@@ -20,4 +20,3 @@ if __name__ == '__main__':
 
     while True:
         get_sentiment(input('Input: '))
-
