@@ -12,7 +12,7 @@ class DiscordMember:
     def __init__(self, uid, time_):
         self.id = uid
         self.score = 25
-        self.time = time
+        self.time_ = time_
 
     def __eq__(self, other):
         if self.id == other.id:
