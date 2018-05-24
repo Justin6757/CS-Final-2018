@@ -24,7 +24,7 @@ def tokenize(sentence):
     """
     special_chars = re.compile(r'\W+')  # Replace all characters except letters and numbers
     tokens = re.sub(special_chars, ' ', sentence)  # Substitute special characters with spaces
-    return [token for token in tokens.split() if token]
+    return [token.lower() for token in tokens.split() if token]
 
 
 # Load word vectors
@@ -79,7 +79,7 @@ def main():
             file_count += 1
             print(f'{file_count}/{NUM_FILES}\t{round(file_count / NUM_FILES * 100, 4)}%')
 
-    np.save('idsMatrix', ids)
+    np.save('ids_matrix', ids)
 
     print(f'Took {(time.time() - start) / 60} minutes')
 

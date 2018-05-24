@@ -1,22 +1,19 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import datetime
-import time
 import os
-import re
+import time
 from random import randint
 
 import numpy as np
 import tensorflow as tf
 
-from ids import MAX_SENTENCE_LENGTH, NUM_FILES, NUM_NEGATIVE, NUM_NON_NEGATIVE
+from ids import MAX_SENTENCE_LENGTH, NUM_FILES, NUM_NEGATIVE, tokenize
 
 BATCH_SIZE = 24
 LSTM_UNITS = 64
 NUM_CLASSES = 2
 ITERATIONS = 100000
-NUM_DIMENSIONS = 300
+NUM_DIMENSIONS = 300  # TODO: Change to 50 (glove vectors have dimension 50)
 
 
 def create(train_model=False):
@@ -25,18 +22,20 @@ def create(train_model=False):
 
 class Model:
     def __init__(self, train_model):
-        self.IDS = np.load('idsMatrix.npy')
+        self.IDS = np.load('ids_matrix.npy')
 
         # Load word vectors
+        # GloVe vectors from https://nlp.stanford.edu/projects/glove/
+        # 50 Dimensional vectors
 
         self.word_list = np.load(
             'Word Vectors/GloVe_words.npy').tolist()  # Load as list; used for getting indices to access word vectors
+
         self.word_list = [word.decode('UTF-8') for word in self.word_list]  # Decode all words in UTF-8 format
 
         self.word_vectors = np.load('Word Vectors/GloVe_vectors.npy')  # Load as NumPy array
 
         os.chdir('../Data')
-        print(os.listdir('.'))
 
         tf.reset_default_graph()
 
@@ -66,7 +65,7 @@ class Model:
         saver = tf.train.Saver()
 
         if train_model:
-            self.train(self.labels, self.input_data, self.accuracy, loss, optimizer, self.session, saver)
+            self.train(loss, optimizer, saver)
         else:
             saver.restore(self.session, tf.train.latest_checkpoint('Models'))
 
@@ -84,33 +83,34 @@ class Model:
         sentence_matrix = self.to_matrix(sentence)
         return self.session.run(self.prediction, {self.input_data: sentence_matrix})[0]
 
-    def train(self, labels, input_data, accuracy, loss, optimizer, sess, saver):
+    def train(self, loss, optimizer, saver):
         start = time.time()
 
-        sess.run(tf.global_variables_initializer())
+        self.session.run(tf.global_variables_initializer())
         tf.summary.scalar('Loss', loss)
-        tf.summary.scalar('Accuracy', accuracy)
+        tf.summary.scalar('Accuracy', self.accuracy)  # TODO: create accuracy graph
         merged = tf.summary.merge_all()
         logdir = 'Tensorboard/' + datetime.datetime.now().strftime('%Y%m%d-%H%M%S') + '/'
-        writer = tf.summary.FileWriter(logdir, sess.graph)
+        writer = tf.summary.FileWriter(logdir, graph=self.session.graph)
+        # tensorboard --logdir=tensorboard
 
         for i in range(1, ITERATIONS + 1):
             print(f'Batch {i}')
             next_batch, next_batch_labels = self.get_training_batch()
-            sess.run(optimizer, {input_data: next_batch, labels: next_batch_labels})
+            self.session.run(optimizer, {self.input_data: next_batch, self.labels: next_batch_labels})
 
             # Write summary to Tensorboard
             if i % 50 == 0:
-                summary = sess.run(merged, {input_data: next_batch, labels: next_batch_labels})
+                summary = self.session.run(merged, {self.input_data: next_batch, self.labels: next_batch_labels})
                 writer.add_summary(summary, i)
 
             # Save the network every 10,000 training iterations
             if i % 10000 == 0:
-                save_path = saver.save(sess, 'Models/pretrained_lstm.ckpt', global_step=i)
+                save_path = saver.save(self.session, 'Models/pretrained_lstm.ckpt', global_step=i)
                 print(f'Saved to {save_path}')
             writer.close()
 
-            print(f'Took {(time.time() - start) / 60} minutes')
+        print(f'Took {(time.time() - start) / 60} minutes')
 
     def test_model(self):
         iterations = 10
@@ -137,25 +137,16 @@ class Model:
         labels = []
         arr = np.zeros([BATCH_SIZE, MAX_SENTENCE_LENGTH])
         for i in range(BATCH_SIZE):
-            num = randint(NUM_FILES // 2, NUM_FILES // 2 + 2000)
-            if num <= NUM_FILES // 2 + 1000:
+            num = randint(1, NUM_FILES)
+            if num <= NUM_NEGATIVE:
                 labels.append([1, 0])
             else:
                 labels.append([0, 1])
-            arr[i] = self.IDS[num - 1:num]
+            arr[i] = self.IDS[num - 1]
         return arr, labels
-
-
-def tokenize(sentence):
-    """
-    Remove non-words and split sentence by word
-    :param sentence:
-    :return: list[str]
-    """
-    special_chars = re.compile(r'\W+')  # Replace all characters except letters and numbers
-    tokens = re.sub(special_chars, ' ', sentence)  # Substitute special characters with spaces
-    return [token for token in tokens.split() if token]
 
 
 if __name__ == '__main__':
     create(True)
+
+# Took 161.18593862056733 minutes

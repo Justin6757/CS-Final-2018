@@ -4,16 +4,20 @@ neural_net = create()
 
 
 def get_sentiment(sentence):
-    positive_score = neural_net.predict(sentence)[0]
-    negative_score = neural_net.predict(sentence)[1]
-    print(f'Positive: {positive_score}\nNegative: {negative_score}')
-    return positive_score + negative_score
+    prediction = neural_net.predict(sentence)
+    negative_score = prediction[0]
+    non_negative_score = prediction[1]
+    print(f'Positive: {non_negative_score}\nNegative: {negative_score}\nComposite: {non_negative_score-negative_score}')
+    return non_negative_score - negative_score
 
 
 def test():
     neural_net.test_model()
 
-# while True:
-#     get_sentiment(input())
 
-# test()
+if __name__ == '__main__':
+    test()
+
+    while True:
+        get_sentiment(input('Input: '))
+
