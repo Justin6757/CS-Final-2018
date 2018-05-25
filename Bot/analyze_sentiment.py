@@ -7,7 +7,9 @@ def get_sentiment(sentence):
     prediction = neural_net.predict(sentence)
     negative_score = prediction[0]
     non_negative_score = prediction[1]
-    print(f'Positive: {non_negative_score}\nNegative: {negative_score}\nComposite: {non_negative_score-negative_score}')
+    print(f'Positive: {non_negative_score}\n'
+          f'Negative: {negative_score}\n'
+          f'Composite: {non_negative_score - negative_score}')
     return non_negative_score - negative_score
 
 

@@ -32,8 +32,6 @@ def main():
     word_list = np.load('Word Vectors/GloVe_words.npy').tolist()  # Used for getting indices to access word vectors
     word_list = [word.decode('UTF-8') for word in word_list]  # Decode all words in UTF-8 format
 
-    word_vectors = np.load('Word Vectors/GloVe_vectors.npy')  # Load as NumPy array
-
     path = '/Users/MacBook/Documents/LSTM Data/'
 
     negative_files = [f'{path}/Negative/' + f for f in listdir(f'{path}/Negative/')
@@ -87,4 +85,4 @@ def main():
 if __name__ == '__main__':
     main()
 
-# Took 258.5635282675425 minutes
+# Took 74.54950703382492 minutes

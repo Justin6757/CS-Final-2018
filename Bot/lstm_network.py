@@ -9,10 +9,10 @@ import tensorflow as tf
 from ids import MAX_SENTENCE_LENGTH, NUM_FILES, NUM_NEGATIVE, tokenize
 
 BATCH_SIZE = 24
-LSTM_UNITS = 64
+LSTM_UNITS = 64  # TODO try changing to 32
 NUM_CLASSES = 2
 ITERATIONS = 100000
-NUM_DIMENSIONS = 300  # TODO: Change to 50 (glove vectors have dimension 50)
+NUM_DIMENSIONS = 300  # TODO change to 50 (glove vectors have dimension 50)
 
 
 def create(train_model=False):
@@ -72,10 +72,13 @@ class Model:
         sentence_matrix = np.zeros([BATCH_SIZE, MAX_SENTENCE_LENGTH], dtype='int32')
         tokenized = tokenize(sentence)
         for index, word in enumerate(tokenized):
-            try:
-                sentence_matrix[0, index] = self.word_list.index(word)
-            except ValueError:
-                sentence_matrix[0, index] = 399999  # Vector for unkown words
+            if index >= 100:
+                break
+            else:
+                try:
+                    sentence_matrix[0, index] = self.word_list.index(word)
+                except ValueError:
+                    sentence_matrix[0, index] = 399999  # Vector for unkown words
         return sentence_matrix
 
     def predict(self, sentence):
