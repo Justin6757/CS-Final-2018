@@ -71,7 +71,6 @@ async def on_ready():
     servers = list(client.servers)
     for server in servers:
         for member in server.members:
-            print(time.time())
             temp = DiscordMember(member.id, time.time())
             if temp not in memberList:
                 memberList.append(temp)
@@ -94,11 +93,8 @@ async def on_message(message):
     if message.content != '!score' and message.author.id != client.user.id:
         try:
             score_change = 0
-            # for sentence in re.split(r'\. |\? |! ', message.content):
-            #     if sentence:
-            #         score_change += min(analyze(sentence)[1].get('watson'), 0)
-            # message_toxicity_string, toxicity_dict = analyze(message.content)
-            # await client.send_message(message.channel, message_toxicity_string)
+            if message.content:
+                score_change += min(get_sentiment(message.content), 0)
         except TypeError:  # returned none
             print('No message to analyze')
             return
@@ -124,6 +120,8 @@ async def on_message(message):
 
         temp.score = new_score
         temp.time = current_time
+        pickle.dump(memberList, open("user.pickle", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
+
 
         if new_score <= BAN_SCORE:
             try:
