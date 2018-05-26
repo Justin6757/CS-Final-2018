@@ -1,23 +1,21 @@
-from os import listdir
+import os
 from os.path import isfile, join
 
-path = '/Users/MacBook/Documents/LSTM Data/'
+os.chdir('../Data/Training Data/')
 
-negative_files = [f'{path}/Negative/' + f for f in listdir(f'{path}/Negative/')
-                  if isfile(join(f'{path}/Negative/', f))]
-non_negative_files = [f'{path}/Non-negative/' + f for f in listdir(f'{path}/Non-negative/')
-                      if isfile(join(f'{path}/Non-negative/', f))]
+negative_files = ['Negative/' + f for f in os.listdir('Negative/') if isfile(join('Negative/', f))]
+non_negative_files = ['Non-negative/' + f for f in os.listdir('Non-negative/') if isfile(join('Non-negative/', f))]
 
 numWords = []
 for n in negative_files:
-    with open(n, "r", encoding='utf-8') as f:
+    with open(n, 'r', encoding='utf-8') as f:
         line = f.readline()
         counter = len(line.split())
         numWords.append(counter)
 print('Negative files finished')
 
 for nn in non_negative_files:
-    with open(nn, "r", encoding='utf-8') as f:
+    with open(nn, 'r', encoding='utf-8') as f:
         line = f.readline()
         counter = len(line.split())
         numWords.append(counter)

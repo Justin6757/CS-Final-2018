@@ -2,8 +2,7 @@ import os
 
 import pandas as pd
 
-os.chdir('Data/Training Data')
-print(os.listdir('/Users/MacBook/Documents/LSTM Data'))
+os.chdir('../Data/Training Data/Raw')
 
 
 def encode(line):
@@ -22,8 +21,8 @@ def toxicity():
 
     comments['toxic'] = labels
 
-    comments['comment'] = comments['comment'].apply(lambda x: x.replace("NEWLINE_TOKEN", " "))
-    comments['comment'] = comments['comment'].apply(lambda x: x.replace("TAB_TOKEN", " "))
+    comments['comment'] = comments['comment'].apply(lambda x: x.replace('NEWLINE_TOKEN', ' '))
+    comments['comment'] = comments['comment'].apply(lambda x: x.replace('TAB_TOKEN', ' '))
 
     for index, row in comments.iterrows():
         print(f'{num}/{total}')
@@ -49,8 +48,8 @@ def aggression():
     labels = annotations.groupby('rev_id')['aggression_score'].mean() < 0
     comments['aggressive'] = labels
 
-    comments['comment'] = comments['comment'].apply(lambda x: x.replace("NEWLINE_TOKEN", " "))
-    comments['comment'] = comments['comment'].apply(lambda x: x.replace("TAB_TOKEN", " "))
+    comments['comment'] = comments['comment'].apply(lambda x: x.replace('NEWLINE_TOKEN', ' '))
+    comments['comment'] = comments['comment'].apply(lambda x: x.replace('TAB_TOKEN', ' '))
 
     for index, row in comments.iterrows():
         print(f'{num}/{total}')
@@ -76,8 +75,8 @@ def attack():
     labels = annotations.groupby('rev_id')['attack'].mean() > 0.5
     comments['attack'] = labels
 
-    comments['comment'] = comments['comment'].apply(lambda x: x.replace("NEWLINE_TOKEN", " "))
-    comments['comment'] = comments['comment'].apply(lambda x: x.replace("TAB_TOKEN", " "))
+    comments['comment'] = comments['comment'].apply(lambda x: x.replace('NEWLINE_TOKEN', ' '))
+    comments['comment'] = comments['comment'].apply(lambda x: x.replace('TAB_TOKEN', ' '))
 
     for index, row in comments.iterrows():
         print(f'{num}/{total}')

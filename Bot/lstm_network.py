@@ -9,10 +9,10 @@ import tensorflow as tf
 from ids import MAX_SENTENCE_LENGTH, NUM_FILES, NUM_NEGATIVE, tokenize
 
 BATCH_SIZE = 24
-LSTM_UNITS = 64  # TODO try changing to 32
+LSTM_UNITS = 32
 NUM_CLASSES = 2
 ITERATIONS = 100000
-NUM_DIMENSIONS = 300  # TODO change to 50 (glove vectors have dimension 50)
+NUM_DIMENSIONS = 50
 
 
 def create(train_model=False):
@@ -116,11 +116,15 @@ class Model:
 
     def test_model(self):
         iterations = 10
+        average_accuracy = 0
         for i in range(iterations):
             next_batch, next_batch_labels = self.get_testing_batch()
-            print('Accuracy for this batch:',
-                  (self.session.run(self.accuracy,
-                                    {self.input_data: next_batch, self.labels: next_batch_labels})) * 100)
+            test_accuracy = self.session.run(self.accuracy,
+                                             {self.input_data: next_batch, self.labels: next_batch_labels}) * 100
+
+            print(f'Accuracy for batch {i}: {test_accuracy}')
+            average_accuracy += test_accuracy
+        print(f'Average accuracy: {average_accuracy / 10}')
 
     def get_training_batch(self):
         labels = []

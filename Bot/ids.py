@@ -32,12 +32,10 @@ def main():
     word_list = np.load('Word Vectors/GloVe_words.npy').tolist()  # Used for getting indices to access word vectors
     word_list = [word.decode('UTF-8') for word in word_list]  # Decode all words in UTF-8 format
 
-    path = '/Users/MacBook/Documents/LSTM Data/'
-
-    negative_files = [f'{path}/Negative/' + f for f in listdir(f'{path}/Negative/')
-                      if isfile(join(f'{path}/Negative/', f))]
-    non_negative_files = [f'{path}/Non-negative/' + f for f in listdir(f'{path}/Non-negative/')
-                          if isfile(join(f'{path}/Non-negative/', f))]
+    negative_files = ['Training Data/Negative/' + f for f in listdir('Training Data/Negative/')
+                      if isfile(join('Training Data/Negative/', f))]
+    non_negative_files = ['Training Data/Non-negative/' + f for f in listdir('Training Data/Non-negative/')
+                          if isfile(join('Training Data/Non-negative/', f))]
 
     ids = np.zeros((NUM_FILES, MAX_SENTENCE_LENGTH), dtype='int32')
 
@@ -45,7 +43,7 @@ def main():
 
     for n in negative_files:
         # 80,712 files
-        with open(n, "r") as f:
+        with open(n, 'r') as f:
             index = 0
             line = f.readline()
             cleaned = tokenize(line)
@@ -62,7 +60,7 @@ def main():
 
     for nn in non_negative_files:
         # 232,505 files
-        with open(nn, "r") as f:
+        with open(nn, 'r') as f:
             index = 0
             line = f.readline()
             cleaned = tokenize(line)

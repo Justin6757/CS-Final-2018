@@ -5,3 +5,5 @@ test.py
 Pretrained/*
 ids_matrix.npy
 tensorboard
+Negative
+Non-negative
