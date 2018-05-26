@@ -8,7 +8,7 @@ Our project is a bot that automatically scrapes and analyzes messages sent on th
 The purpose of this bot is to provide a platform for positive environment control. This framework could be used to direct online discussion on sites like Facebook or Twitter in a positive direction or be used by businesses to promote positive interaction between automated customer service bots and customers.
 
 ## API's Used
-TensorFlow
+Tensorflow and Tensorboard (1.8.0)
 
 NumPy
 
