@@ -90,11 +90,10 @@ class Model:
 
         self.session.run(tf.global_variables_initializer())
         tf.summary.scalar('Loss', loss)
-        tf.summary.scalar('Accuracy', self.accuracy)  # TODO: create accuracy graph
+        tf.summary.scalar('Accuracy', self.accuracy)
         merged = tf.summary.merge_all()
-        logdir = 'Tensorboard/' + datetime.datetime.now().strftime('%Y%m%d-%H%M%S') + '/'
+        logdir = f'Tensorboard/{datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")}/'
         writer = tf.summary.FileWriter(logdir, graph=self.session.graph)
-        # tensorboard --logdir=tensorboard
 
         for i in range(1, ITERATIONS + 1):
             print(f'Batch {i}')
@@ -102,15 +101,18 @@ class Model:
             self.session.run(optimizer, {self.input_data: next_batch, self.labels: next_batch_labels})
 
             # Write summary to Tensorboard
+            # Run tensorboard --logdir=Data/Tensorboard
+            # View at localhost:6006
             if i % 50 == 0:
                 summary = self.session.run(merged, {self.input_data: next_batch, self.labels: next_batch_labels})
                 writer.add_summary(summary, i)
+                writer.flush()
 
             # Save the network every 10,000 training iterations
             if i % 10000 == 0:
                 save_path = saver.save(self.session, 'Models/pretrained_lstm.ckpt', global_step=i)
                 print(f'Saved to {save_path}')
-            writer.close()
+            # writer.close()
 
         print(f'Took {(time.time() - start) / 60} minutes')
 
@@ -122,7 +124,7 @@ class Model:
             test_accuracy = self.session.run(self.accuracy,
                                              {self.input_data: next_batch, self.labels: next_batch_labels}) * 100
 
-            print(f'Accuracy for batch {i}: {test_accuracy}')
+            print(f'Accuracy for batch {i + 1}: {test_accuracy}')
             average_accuracy += test_accuracy
         print(f'Average accuracy: {average_accuracy / 10}')
 
