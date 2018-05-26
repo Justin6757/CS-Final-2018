@@ -8,11 +8,14 @@ import tensorflow as tf
 
 from ids import MAX_SENTENCE_LENGTH, NUM_FILES, NUM_NEGATIVE, tokenize
 
+# Hyperparameters
+
 BATCH_SIZE = 24
 LSTM_UNITS = 32
 NUM_CLASSES = 2
 ITERATIONS = 100000
 NUM_DIMENSIONS = 50
+LEARNING_RATE = 0.001
 
 
 def create(train_model=False):
@@ -58,7 +61,7 @@ class Model:
         self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
         loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.prediction, labels=self.labels))
-        optimizer = tf.train.AdamOptimizer().minimize(loss)
+        optimizer = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE).minimize(loss)
 
         self.session = tf.InteractiveSession()
         saver = tf.train.Saver()
@@ -92,7 +95,7 @@ class Model:
         tf.summary.scalar('Loss', loss)
         tf.summary.scalar('Accuracy', self.accuracy)
         merged = tf.summary.merge_all()
-        logdir = f'Tensorboard/{datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")}/'
+        logdir = f'Tensorboard/{datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}/'
         writer = tf.summary.FileWriter(logdir, graph=self.session.graph)
 
         for i in range(1, ITERATIONS + 1):
@@ -157,4 +160,4 @@ class Model:
 if __name__ == '__main__':
     create(True)
 
-# Took 161.18593862056733 minutes
+# Took 55.92745286623637 minutes
