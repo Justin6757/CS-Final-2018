@@ -13,9 +13,9 @@ from ids import MAX_SENTENCE_LENGTH, NUM_FILES, NUM_NEGATIVE, tokenize
 BATCH_SIZE = 24
 LSTM_UNITS = 32
 NUM_CLASSES = 2
-ITERATIONS = 100000
+ITERATIONS = 1000
 NUM_DIMENSIONS = 50
-LEARNING_RATE = 0.001
+LEARNING_RATE = 0.1
 
 
 def create(train_model=False):
@@ -60,7 +60,7 @@ class Model:
         correct_prediction = tf.equal(tf.argmax(self.prediction, 1), tf.argmax(self.labels, 1))
         self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-        loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=self.prediction, labels=self.labels))
+        loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=self.prediction, labels=self.labels))
         optimizer = tf.train.AdamOptimizer(learning_rate=LEARNING_RATE).minimize(loss)
 
         self.session = tf.InteractiveSession()

@@ -18,16 +18,18 @@ def get_sentiment(sentence):
     prediction = NEURAL_NET.predict(sentence)
     negative_score = prediction[0]
     non_negative_score = prediction[1]
-    print(f'Positive: {non_negative_score}\nNegative: {negative_score}\nComposite: {non_negative_score-negative_score}')
-    return non_negative_score - negative_score
+    string_format = f'Positive: {non_negative_score}\n' \
+                    f'Negative: {negative_score}\n' \
+                    f'Composite: {non_negative_score-negative_score}'
+    return non_negative_score - negative_score, string_format
 
 
 # class for member info
 class DiscordMember:
-    def __init__(self, uid, mtime):
+    def __init__(self, uid, last_message_time):
         self.id = uid
         self.score = 25
-        self.mtime = mtime
+        self.last_message_time = last_message_time
 
     def __eq__(self, other):
         if self.id == other.id:
@@ -35,23 +37,17 @@ class DiscordMember:
         return False
 
     def __str__(self):
-        return "ID: " + self.id + "\n" + \
-               "Score: " + str(self.score) + "\n" + \
-               "\n" + "--------------------------------"
+        return 'ID: ' + self.id + '\n' + \
+               'Score: ' + str(self.score) + '\n' + \
+               '--------------------------------'
 
 
 # loads data from previous session of bot
 try:
-    memberList = pickle.load(open("user.pickle", "rb"))
+    member_list = pickle.load(open('users.pickle', 'rb'))
 except (OSError, IOError) as e:
-    memberList = []
-    pickle.dump(memberList, open("user.pickle", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
-
-# Example load and dump using pickle:
-# a = {'hello': 'world'}
-# pickle.dump(a, open('filename.pickle', 'wb'), protocol=pickle.HIGHEST_PROTOCOL)
-#
-# b = pickle.load(open('filename.pickle', 'rb')
+    member_list = []
+    pickle.dump(member_list, open('users.pickle', 'wb'), protocol=pickle.HIGHEST_PROTOCOL)
 
 BOT_PREFIX = '!'
 # Get at https://discordapp.com/developers/applications/me
@@ -67,14 +63,14 @@ BAN_SCORE = 10
 @client.event
 async def on_ready():
     await client.change_presence(game=Game(name='positively'))
-    print('Logged in as ' + client.user.name)
+    print(f'Logged in as {client.user.name}\n')
     servers = list(client.servers)
     for server in servers:
         for member in server.members:
             temp = DiscordMember(member.id, time.time())
-            if temp not in memberList:
-                memberList.append(temp)
-    for member in memberList:
+            if temp not in member_list:
+                member_list.append(temp)
+    for member in member_list:
         print(member)
 
 
@@ -84,84 +80,78 @@ async def list_servers():
         print('Current servers:')
         for server in client.servers:
             print(server.name)
+        print()
         await asyncio.sleep(600)
 
 
 @client.event
 async def on_message(message):
     await client.process_commands(message)
-    if message.content != '!score' and message.author.id != client.user.id:
-        try:
-            score_change = 0
-            if message.content:
-                score_change += min(get_sentiment(message.content), 0)
-        except TypeError:  # returned none
-            print('No message to analyze')
-            return
+    if message.content and message.content != '!score' and message.author.id != client.user.id:
+        score_change, string_format = get_sentiment(message.content)
+        score_change = min(score_change, 0)
+        # print(string_format)  # For testing
 
         # Update score
 
         current_time = time.time()
-        old_time = current_time
 
         temp = DiscordMember(message.author.id, time.time())
-        if temp not in memberList:
-            memberList.append(temp)
+        if temp not in member_list:
+            member_list.append(temp)
 
-        for user in memberList:
+        for user in member_list:
             if user.id == message.author.id:
-                temp = user
                 prev_score = user.score
-                old_time = user.mtime
+                old_time = user.last_message_time
 
-        time_points = (current_time - old_time) / 600
+                time_points = (current_time - old_time) / 600
 
-        new_score = min(prev_score + time_points, MAX_SCORE) + score_change
+                new_score = min(prev_score + time_points, MAX_SCORE) + score_change
 
-        temp.score = new_score
-        temp.time = current_time
-        pickle.dump(memberList, open("user.pickle", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
+                user.score = new_score
+                user.last_message_time = current_time
+                pickle.dump(member_list, open('users.pickle', 'wb'), protocol=pickle.HIGHEST_PROTOCOL)
 
+                if new_score <= BAN_SCORE:
+                    try:
+                        await client.ban(message.server.get_member(message.author.id), delete_message_days=0)
+                    except discord.errors.Forbidden:
+                        print('Privilege too low')
+                    else:
+                        member_list.remove(temp)
 
-        if new_score <= BAN_SCORE:
-            try:
-                await client.ban(message.server.get_member(message.author.id), delete_message_days=0)
-            except discord.errors.Forbidden:
-                print('Privilege too low')
-            else:
-                memberList.remove(temp)
-
-        elif new_score <= WARNING_SCORE:
-            await client.send_message(message.channel,
-                                      f'**WARNING, <@{message.author.id}>, your positivity score is very low '
-                                      f'({"{0:0.1f}".format(new_score)}/{MAX_SCORE})**'
-                                      f'\nYou will be banned if your score reaches {BAN_SCORE} or below.')
+                elif new_score <= WARNING_SCORE:
+                    await client.send_message(message.channel,
+                                              f'**WARNING <@{message.author.id}> your positivity score is very low '
+                                              f'({"{0:0.1f}".format(new_score)}/{MAX_SCORE})**'
+                                              f'\nYou will be banned if your score reaches {BAN_SCORE} or below.')
+                break
 
 
 @client.command(pass_context=True)
 async def score(ctx):
     temp = DiscordMember(ctx.message.author.id, time.time())
-    if temp not in memberList:
-        memberList.append(temp)
+    if temp not in member_list:
+        member_list.append(temp)
 
     current_time = time.time()
-    old_time = current_time
 
-    for user in memberList:
+    for user in member_list:
         if user.id == ctx.message.author.id:
-            temp = user
             prev_score = user.score
-            old_time = user.mtime
+            old_time = user.last_message_time
 
-    time_points = (current_time - old_time) / 600
+            time_points = (current_time - old_time) / 600
 
-    temp.score = min(prev_score + time_points, MAX_SCORE)
-    temp.time = current_time
+            user.score = min(prev_score + time_points, MAX_SCORE)
+            user.last_message_time = current_time
+            pickle.dump(member_list, open('users.pickle', 'wb'), protocol=pickle.HIGHEST_PROTOCOL)
 
-    await client.send_message(ctx.message.channel,
-                              f'{ctx.message.author}\'s score is '
-                              f'{"{0:0.1f}".format(min(prev_score + time_points, MAX_SCORE))}/{MAX_SCORE}')
+            await client.send_message(ctx.message.channel,
+                                      f'{ctx.message.author}\'s score is '
+                                      f'{"{0:0.1f}".format(min(prev_score + time_points, MAX_SCORE))}/{MAX_SCORE}')
 
-
-client.loop.create_task(list_servers())
-client.run(TOKEN)
+if __name__ == '__main__':
+    client.loop.create_task(list_servers())
+    client.run(TOKEN)
