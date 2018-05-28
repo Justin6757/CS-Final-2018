@@ -20,7 +20,7 @@ def get_sentiment(sentence):
     non_negative_score = prediction[1]
     string_format = f'Positive: {non_negative_score}\n' \
                     f'Negative: {negative_score}\n' \
-                    f'Composite: {non_negative_score-negative_score}'
+                    f'Composite: {non_negative_score - negative_score}'
     return non_negative_score - negative_score, string_format
 
 

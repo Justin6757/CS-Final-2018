@@ -1,5 +1,4 @@
 import datetime
-import os
 import time
 from random import randint
 
@@ -36,8 +35,6 @@ class Model:
         self.word_list = [word.decode('UTF-8') for word in self.word_list]  # Decode all words in UTF-8 format
 
         self.word_vectors = np.load('Word Vectors/GloVe_vectors.npy')  # Load as NumPy array
-
-        os.chdir('../Data')
 
         tf.reset_default_graph()
 
