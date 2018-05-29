@@ -13,6 +13,16 @@ from lstm_network import create
 
 NEURAL_NET = create()
 
+BOT_PREFIX = '!'
+# Get at https://discordapp.com/developers/applications/me
+TOKEN = 'NDQzNDQzNzUyNzI4NjU3OTIx.DdNdWQ.3HElcDFaWvTdVyn18XlrTZGhZpM'
+
+client = Bot(command_prefix=BOT_PREFIX)
+
+MAX_SCORE = 100
+WARNING_SCORE = 20
+BAN_SCORE = 0
+
 
 def get_sentiment(sentence):
     prediction = NEURAL_NET.predict(sentence)
@@ -28,7 +38,7 @@ def get_sentiment(sentence):
 class DiscordMember:
     def __init__(self, uid, last_message_time):
         self.id = uid
-        self.score = 25
+        self.score = MAX_SCORE
         self.last_message_time = last_message_time
 
     def __eq__(self, other):
@@ -49,17 +59,6 @@ except (OSError, IOError) as e:
     member_list = []
     pickle.dump(member_list, open('users.pickle', 'wb'), protocol=pickle.HIGHEST_PROTOCOL)
 
-BOT_PREFIX = '!'
-# Get at https://discordapp.com/developers/applications/me
-TOKEN = 'NDQzNDQzNzUyNzI4NjU3OTIx.DdNdWQ.3HElcDFaWvTdVyn18XlrTZGhZpM'
-
-client = Bot(command_prefix=BOT_PREFIX)
-
-MAX_SCORE = 25
-WARNING_SCORE = 15
-BAN_SCORE = 10
-
-
 @client.event
 async def on_ready():
     await client.change_presence(game=Game(name='positively'))
@@ -76,12 +75,10 @@ async def on_ready():
 
 async def list_servers():
     await client.wait_until_ready()
-    while not client.is_closed:
-        print('Current servers:')
-        for server in client.servers:
-            print(server.name)
-        print()
-        await asyncio.sleep(600)
+    print('Current servers:')
+    for server in client.servers:
+        print(server.name)
+    print()
 
 
 @client.event
@@ -109,7 +106,7 @@ async def on_message(message):
 
                 new_score = min(prev_score + time_points, MAX_SCORE) + score_change
 
-                user.score = new_score
+                user.score = max(new_score, 0)
                 user.last_message_time = current_time
                 pickle.dump(member_list, open('users.pickle', 'wb'), protocol=pickle.HIGHEST_PROTOCOL)
 
@@ -125,7 +122,7 @@ async def on_message(message):
                     await client.send_message(message.channel,
                                               f'**WARNING <@{message.author.id}> your positivity score is very low '
                                               f'({"{0:0.1f}".format(new_score)}/{MAX_SCORE})**'
-                                              f'\nYou will be banned if your score reaches {BAN_SCORE} or below.')
+                                              f'\nYou will be banned if your score reaches {BAN_SCORE}.')
                 break
 
 
