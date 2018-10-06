@@ -23,7 +23,7 @@ MAX_SCORE = 100
 WARNING_SCORE = 20
 BAN_SCORE = 0
 
-
+#predicts the negativity of sentence and returns the score
 def get_sentiment(sentence):
     prediction = NEURAL_NET.predict(sentence)
     negative_score = prediction[0]
@@ -59,6 +59,7 @@ except (OSError, IOError) as e:
     member_list = []
     pickle.dump(member_list, open('users.pickle', 'wb'), protocol=pickle.HIGHEST_PROTOCOL)
 
+#actions that are performed every time the bot starts up. List out all members in the server using their id's within the ide
 @client.event
 async def on_ready():
     await client.change_presence(game=Game(name='positively'))
@@ -72,7 +73,7 @@ async def on_ready():
     for member in member_list:
         print(member)
 
-
+#prints list of servers that the bot is in
 async def list_servers():
     await client.wait_until_ready()
     print('Current servers:')
@@ -80,7 +81,7 @@ async def list_servers():
         print(server.name)
     print()
 
-
+#Reads messages of members of server and updates score accordingly
 @client.event
 async def on_message(message):
     await client.process_commands(message)
@@ -125,7 +126,7 @@ async def on_message(message):
                                               f'\nYou will be banned if your score reaches {BAN_SCORE}.')
                 break
 
-
+#calculates score and updates variables
 @client.command(pass_context=True)
 async def score(ctx):
     temp = DiscordMember(ctx.message.author.id, time.time())
