@@ -1,5 +1,6 @@
 # Toxical
-Andrew Li (Pd. 1) and Justin Li (Pd.5)
+Created by: Andrew Li and Justin Li
+Python 3.6
 
 ## What It Does
 Our project is a bot that automatically scrapes and analyzes messages sent on the Discord messaging platform. The bot 
@@ -13,7 +14,7 @@ The purpose of this bot is to provide a platform for positive environment contro
 direct online discussion on sites like Facebook or Twitter in a positive direction or be used by businesses to promote 
 positive interaction between automated customer service bots and customers.
 
-## API's Used
+## APIs Used
 Tensorflow and Tensorboard (1.8.0)
 
 NumPy
